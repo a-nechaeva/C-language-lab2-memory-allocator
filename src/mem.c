@@ -81,7 +81,21 @@ static bool mergeable(struct block_header const* restrict fst, struct block_head
 }
 
 static bool try_merge_with_next( struct block_header* block ) {
-  /*  ??? */
+  //-----------------------------------------------------------------------------
+    if (block == NULL)
+        return false;
+
+    struct block_header* new_block = block -> next;
+    if (new_block == NULL)
+        return false;
+
+    if (!mergeable(block, new_block))
+        return false;
+
+    block->next = new_block->next;
+    block->capacity.bytes = block->capacity.bytes + size_from_capacity(new_block->capacity).bytes;
+    return true;
+  //-----------------------------------------------------------------------------
 }
 
 
@@ -130,5 +144,11 @@ void _free( void* mem ) {
   if (!mem) return ;
   struct block_header* header = block_get_header( mem );
   header->is_free = true;
-  /*  ??? */
+
+  //-----------------------------------------------------------
+  while(header != NULL) {
+      try_merge_with_next(header);
+      header = header -> next;
+  }
+  //-----------------------------------------------------------
 }
