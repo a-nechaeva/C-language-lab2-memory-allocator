@@ -120,13 +120,36 @@ static struct block_search_result try_memalloc_existing ( size_t query, struct b
 
 
 static struct block_header* grow_heap( struct block_header* restrict last, size_t query ) {
-  /*  ??? */
+  //---------------------------------------------------------------------------------
+    if (last == NULL)
+        return NULL;
+    if (BLOCK_MIN_CAPACITY > query)
+        query = BLOCK_MIN_CAPACITY;
+    void* new_block = block_after(last);
+    last->next = alloc_region(new_block, query).addr;
+    /*
+     * if (try_merge_with_next(last)) {
+     * return last;
+     * }
+     */
+    return last->next;
+  //---------------------------------------------------------------------------------
 }
 
 /*  Реализует основную логику malloc и возвращает заголовок выделенного блока */
 static struct block_header* memalloc( size_t query, struct block_header* heap_start) {
-
-  /*  ??? */
+    //-------------------------------------------------------------------
+    if (heap_start == NULL)
+        return NULL;
+    struct block_search_result result = try_memalloc_existing(query, heap_start);
+    if (result.type == BSR_REACHED_END_NOT_FOUND) {
+        grow_heap(result.block, query);
+        result = try_memalloc_existing(query, heap_start)
+    }
+    if (result.type != BSR_FOUND_GOOD_BLOCK)
+        return NULL;
+    return result.block;
+    //-------------------------------------------------------------------
 
 }
 
