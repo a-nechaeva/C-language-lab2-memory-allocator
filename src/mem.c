@@ -40,7 +40,19 @@ static void* map_pages(void const* addr, size_t length, int additional_flags) {
 
 /*  аллоцировать регион памяти и инициализировать его блоком */
 static struct region alloc_region  ( void const * addr, size_t query ) {
-  /*  ??? */
+  //---------------------------------------------------------------------
+  if (addr == NULL)
+      return REGION_INVALID;
+
+  size_t size = region_actual_size(query);
+  void * reg_addr = map_pages(addr, size, MAP_FIXED_NOREPLACE);
+  if ((reg_addr == MAP_FAILED) || (reg_addr == NULL))
+      return REGION_INVALID;
+
+    block_init(reg_addr, (block_size) {.bytes = size}, NULL);
+
+    return (struct region) {.addr = reg_addr, .size = size, .extends = true};
+  //---------------------------------------------------------------------
 }
 
 static void* block_after( struct block_header const* block )         ;
