@@ -1,3 +1,7 @@
-//
-// Created by user on 01.01.2024.
-//
+#include "tests.h"
+#include "stdio.h"
+
+
+int main() {
+
+}
