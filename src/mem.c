@@ -61,7 +61,21 @@ static bool block_splittable( struct block_header* restrict block, size_t query)
 }
 
 static bool split_if_too_big( struct block_header* block, size_t query ) {
-  /*  ??? */
+  //-------------------------------------------------------------------------
+    if (block == NULL)
+        return false;
+
+    if (!block_splittable(block, query))
+        return false;
+
+    query = size_max(BLOCK_MIN_CAPACITY, query);
+    block_size second_block = {.bytes = block->capacity.bytes - query};
+    block->capacity.bytes = query;
+    void * second_block_add = block_after(block);
+    block_init(second_block_add, second_block, block->next);
+    block->next = second_block_add;
+    return true;
+  //--------------------------------------------------------------------------
 }
 
 
@@ -108,13 +122,45 @@ struct block_search_result {
 
 
 static struct block_search_result find_good_or_last  ( struct block_header* restrict block, size_t sz )    {
-  /*??? */
+  //-------------------------------------------------------------------------------------------
+    if (sz <= 0)
+        return (struct block_search_result) {.type = BSR_CORRUPTED};
+
+    sz = size_max(BLOCK_MIN_CAPACITY, sz);
+    struct block_header * last_block = NULL;
+    struct block_header * current_block = block;
+
+    while (current_block != NULL) {
+        if ((current_block->is_free) && (block_is_big_enough(sz, current_block)))
+            return (struct block_search_result) {.block = current_block, .type = BSR_FOUND_GOOD_BLOCK};
+
+        last_block = current_block;
+        current_block = current_block->next;
+    }
+    if (last_block == NULL)
+        return (struct block_search_result) {.type = BSR_CORRUPTED};
+
+    return (struct block_search_result) {.block = last_block, .type = BSR_REACHED_END_NOT_FOUND};
+  //----------------------------------------------------------------------------------------------
 }
 
 /*  Попробовать выделить память в куче начиная с блока `block` не пытаясь расширить кучу
  Можно переиспользовать как только кучу расширили. */
 static struct block_search_result try_memalloc_existing ( size_t query, struct block_header* block ) {
-  
+  //----------------------------------------------------------------------------------
+    if (block == NULL)
+        return (struct block_search_result) {.type = BSR_CORRUPTED};
+
+    query = size_max(BLOCK_MIN_CAPACITY, query);
+    struct block_search_result new_block = find_good_or_last(block, query);
+
+    if (new_block.type == BSR_FOUND_GOOD_BLOCK) {
+        new_block.block->is_free = false;
+    }
+
+    return new_block;
+
+  //---------------------------------------------------------------------------------
 }
 
 
@@ -127,12 +173,11 @@ static struct block_header* grow_heap( struct block_header* restrict last, size_
         query = BLOCK_MIN_CAPACITY;
     void* new_block = block_after(last);
     last->next = alloc_region(new_block, query).addr;
-    /*
-     * if (try_merge_with_next(last)) {
-     * return last;
-     * }
-     */
-    return last->next;
+
+    if (!try_merge_with_next(last))
+        return last->next;
+    else
+        return last;
   //---------------------------------------------------------------------------------
 }
 
