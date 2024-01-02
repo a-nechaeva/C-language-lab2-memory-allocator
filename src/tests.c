@@ -5,7 +5,15 @@
 
 // Обычное успешное выделение памяти.
 bool test_1(void * start_heap) {
+    void * malloc_1 = _malloc(1000);
 
+    if (malloc_1 == NULL) {
+        printf("Test 1 failed :( \n");
+        return false;
+    }
+    printf("Test 1 passed! \n");
+    _free(malloc_1);
+    return true;
 }
 
 // Освобождение одного блока из нескольких выделенных.
@@ -48,7 +56,7 @@ void run_tests() {
         if (test_5(memory_heap))
             test_passed += 1;
 
-        printf("Passed %Iu tests.", test_passed);
+        printf("Passed %Iu of 5 tests.", test_passed);
     }
 
 }
