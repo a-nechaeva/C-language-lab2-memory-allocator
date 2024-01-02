@@ -201,7 +201,7 @@ static struct block_header* memalloc( size_t query, struct block_header* heap_st
     struct block_search_result result = try_memalloc_existing(query, heap_start);
     if (result.type == BSR_REACHED_END_NOT_FOUND) {
         grow_heap(result.block, query);
-        result = try_memalloc_existing(query, heap_start)
+        result = try_memalloc_existing(query, heap_start);
     }
     if (result.type != BSR_FOUND_GOOD_BLOCK)
         return NULL;
@@ -216,7 +216,7 @@ void* _malloc( size_t query ) {
   else return NULL;
 }
 
-static struct block_header* block_get_header(void* contents) {
+struct block_header* block_get_header(void* contents) {
   return (struct block_header*) (((uint8_t*)contents)-offsetof(struct block_header, contents));
 }
 
