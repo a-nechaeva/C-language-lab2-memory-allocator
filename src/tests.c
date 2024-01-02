@@ -5,6 +5,7 @@
 
 // Обычное успешное выделение памяти.
 bool test_1(void * start_heap) {
+    printf("Test 1: Usual successful memory allocation...\n");
     void * malloc_1 = _malloc(1000);
 
     if (malloc_1 == NULL) {
@@ -42,7 +43,7 @@ void run_tests() {
     if (memory_heap == NULL)
         printf("Error during initialization start memory heap :(");
     else {
-        printf("Tests started...");
+        printf("Tests started...\n");
         size_t test_passed = 0;
 
         if (test_1(memory_heap))
