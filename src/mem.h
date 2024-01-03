@@ -20,5 +20,7 @@ void* heap_init( size_t initial_size );
 void debug_struct_info( FILE* f, void const* address );
 void debug_heap( FILE* f,  void const* ptr );
 struct block_header * block_get_header(void * contents);
+void* block_after( struct block_header const* block );
+void* map_pages(void const* addr, size_t length, int additional_flags);
 
 #endif

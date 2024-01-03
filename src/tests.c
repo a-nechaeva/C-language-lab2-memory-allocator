@@ -2,8 +2,10 @@
 #include "tests.h"
 #include "mem.h"
 #include "mem_internals.h"
+#include "util.h"
 
-static void * heap;
+static void * memory_heap;
+
 // Обычное успешное выделение памяти.
 bool test_1() {
     printf("Test 1: Usual successful memory allocation...\n");
@@ -141,21 +143,47 @@ bool test_4() {
 }
 
 // Память закончилась, старый регион памяти не расширить из-за другого выделенного диапазона адресов, новый регион выделяется в другом месте.
-/*bool test_5() {
+bool test_5() {
+    printf("Test 5: The memory has run out, the old memory region cannot be expanded due to a different allocated address range, the new region is allocated elsewhere...\n");
+    void * malloc_1 = _malloc(3000);
 
+    if (malloc_1 == NULL) {
+        printf("Test 5 failed: first block memory didn't allocate. \n");
+        return false;
+    }
+    struct block_header * addr = (struct block_header *) memory_heap;
+
+    map_pages(block_after(addr), 3000, MAP_FIXED);
+    
+    void * malloc_2 = _malloc(9000);
+
+    if (malloc_2 == NULL) {
+        printf("Test 5 failed: second block memory didn't allocate. \n");
+        return false;
+    }
+
+    if (block_after(addr) != block_get_header(malloc_2)) {
+        printf("Test 5 passed! \n");
+        _free(malloc_1);
+        _free(malloc_2);
+        return true;
+    }
+
+    printf("Test 5 failed: second block allocated next to the first one. \n");
+    _free(malloc_1);
+    _free(malloc_2);
+    return false;    
 }
-*/
+
 
 void run_tests() {
-    //void * memory_heap = heap_init(2 * REGION_MIN_SIZE);
+    memory_heap = heap_init(500);
 
-    //if (memory_heap == NULL)
-    //    printf("Error during initialization start memory heap :(");
-    //else {
+    if (memory_heap == NULL)
+        printf("Error during initialization start memory heap :(");
+    else {
         printf("Tests started...\n");
         size_t test_passed = 0;
-
-        heap = heap_init(400);
 
         if (test_1())
             test_passed += 1;
@@ -165,11 +193,11 @@ void run_tests() {
             test_passed += 1;
         if (test_4())
             test_passed += 1;
-        //if (test_5(memory_heap))
-           // test_passed += 1;
+        if (test_5())
+            test_passed += 1;
 
         printf("Passed %zu of 5 tests.", test_passed);
-    //}
+    }
 
 }
 

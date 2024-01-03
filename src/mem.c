@@ -34,7 +34,7 @@ extern inline bool region_is_invalid( const struct region* r );
 
 
 
-static void* map_pages(void const* addr, size_t length, int additional_flags) {
+void* map_pages(void const* addr, size_t length, int additional_flags) {
   return mmap( (void*) addr, length, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | additional_flags , 0, 0 );
 }
 
@@ -55,7 +55,7 @@ static struct region alloc_region  ( void const * addr, size_t query ) {
   //---------------------------------------------------------------------
 }
 
-static void* block_after( struct block_header const* block )         ;
+void* block_after( struct block_header const* block )         ;
 
 void* heap_init( size_t initial ) {
   const struct region region = alloc_region( HEAP_START, initial );
@@ -93,7 +93,7 @@ static bool split_if_too_big( struct block_header* block, size_t query ) {
 
 /*  --- Слияние соседних свободных блоков --- */
 
-static void* block_after( struct block_header const* block )              {
+void* block_after( struct block_header const* block )              {
   return  (void*) (block->contents + block->capacity.bytes);
 }
 static bool blocks_continuous (
