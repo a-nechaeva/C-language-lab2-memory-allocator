@@ -167,6 +167,7 @@ static struct block_search_result try_memalloc_existing ( size_t query, struct b
     struct block_search_result new_block = find_good_or_last(block, query);
 
     if (new_block.type == BSR_FOUND_GOOD_BLOCK) {
+        split_if_too_big(new_block.block, query);
         new_block.block->is_free = false;
     }
 

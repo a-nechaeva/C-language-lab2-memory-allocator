@@ -7,7 +7,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <sys/mman.h>
 
 #define HEAP_START ((void*)0x04040000)
 
