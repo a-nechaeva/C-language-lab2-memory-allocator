@@ -1,0 +1,2 @@
+/home/anya/assignment-memory-allocator/build/CMakeFiles/edit_cache.dir
+/home/anya/assignment-memory-allocator/build/CMakeFiles/rebuild_cache.dir
