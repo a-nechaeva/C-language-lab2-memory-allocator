@@ -175,6 +175,9 @@ static bool test_5() {
     return false;    
 }
 
+typedef bool (*tests)();
+tests my_tests_array[5] = {test_1, test_2, test_3, test_4, test_5};
+
 
 void run_tests() {
     memory_heap = heap_init(500);
@@ -185,16 +188,12 @@ void run_tests() {
         printf("Tests started...\n");
         size_t test_passed = 0;
 
-        if (test_1())
-            test_passed += 1;
-        if (test_2())
-            test_passed += 1;
-        if (test_3())
-            test_passed += 1;
-        if (test_4())
-            test_passed += 1;
-        if (test_5())
-            test_passed += 1;
+        for (size_t i = 0; i < 5; i++) {
+
+            if (my_tests_array[i]())
+                test_passed++;
+
+        }       
 
         printf("Passed %zu of 5 tests ^..^ \n", test_passed);
     }
