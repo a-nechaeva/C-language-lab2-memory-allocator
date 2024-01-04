@@ -7,7 +7,7 @@
 static void * memory_heap;
 
 // Обычное успешное выделение памяти.
-bool test_1() {
+static bool test_1() {
     printf("Test 1: Usual successful memory allocation...\n");
     void * malloc_1 = _malloc(100);
 
@@ -21,7 +21,7 @@ bool test_1() {
 }
 
 // Освобождение одного блока из нескольких выделенных.
-bool test_2() {
+static bool test_2() {
     printf("Test 2: Freeing one block from several allocated ones...\n");
 
     void * malloc_1 = _malloc(100);
@@ -69,7 +69,7 @@ bool test_2() {
 }
 
 // Освобождение двух блоков из нескольких выделенных.
-bool test_3() {
+static bool test_3() {
     printf("Test 3: Freeing two blocks from several allocated ones...\n");
 
     void * malloc_1 = _malloc(100);
@@ -125,7 +125,7 @@ bool test_3() {
 }
 
 // Память закончилась, новый регион памяти расширяет старый.
-bool test_4() {
+static bool test_4() {
     printf("Test 4: The memory has run out, the new memory region expands the old one...\n");
     void * malloc_1 = _malloc(9000);
     if (malloc_1 == NULL) {
@@ -143,7 +143,7 @@ bool test_4() {
 }
 
 // Память закончилась, старый регион памяти не расширить из-за другого выделенного диапазона адресов, новый регион выделяется в другом месте.
-bool test_5() {
+static bool test_5() {
     printf("Test 5: The memory has run out, the old memory region cannot be expanded due to a different allocated address range, the new region is allocated elsewhere...\n");
     void * malloc_1 = _malloc(3000);
 
@@ -196,7 +196,7 @@ void run_tests() {
         if (test_5())
             test_passed += 1;
 
-        printf("Passed %zu of 5 tests.", test_passed);
+        printf("Passed %zu of 5 tests ^..^ \n", test_passed);
     }
 
 }
